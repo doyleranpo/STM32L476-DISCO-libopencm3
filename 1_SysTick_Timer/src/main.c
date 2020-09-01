@@ -1,8 +1,14 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/flash.h>
 
 static void Clock_config(void) {
     rcc_osc_on(RCC_HSI16);
+
+    flash_prefetch_enable();
+	flash_set_ws(4);
+	flash_dcache_enable();
+	flash_icache_enable();
 
     rcc_set_main_pll(RCC_PLLCFGR_PLLSRC_HSI16, 4, 40, 0, 0, RCC_PLLCFGR_PLLQ_DIV2);
     rcc_osc_on(RCC_PLL);
@@ -12,6 +18,7 @@ static void Clock_config(void) {
 
     rcc_set_sysclk_source(RCC_CFGR_SW_PLL);
     rcc_wait_for_sysclk_status(RCC_PLL);
+    rcc_periph_clock_enable(RCC_SYSCFG);
 
     rcc_ahb_frequency = 80e6;
 	rcc_apb1_frequency = 80e6;
@@ -28,8 +35,8 @@ int main(void) {
         gpio_toggle(GPIOB, GPIO2);
 
         for (int i = 0; i < 4000000; i++)
-            __asm__("NOP");
-        
+            __asm__("NOP"); 
+
         gpio_toggle(GPIOE, GPIO8);
     }
     return 0;
