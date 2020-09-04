@@ -94,6 +94,7 @@ void usart2_isr(void) {
     if( ( (USART_CR1(USART2) & USART_CR1_RXNEIE) != 0) && ((USART_ISR(USART2) & USART_ISR_RXNE) != 0)) {
         data = usart_recv(USART2);
 
+        USART_CR1(USART2) |= USART_CR1_TXEIE;
     }
 
     if (((USART_CR1(USART2) & USART_CR1_TXEIE) != 0) && ((USART_ISR(USART2) & USART_ISR_TXE) != 0)) {
